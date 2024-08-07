@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Paycheck Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Paycheck Calculator</h1>
+        <form id="paycheckForm">
+            <label for="startMonth">Start Month (mm):</label>
+            <input type="number" id="startMonth" name="startMonth" min="1" max="12" required>
+            
+            <label for="startDay">Start Day (dd):</label>
+            <input type="number" id="startDay" name="startDay" min="1" max="31" required>
+            
+            <label for="endMonth">End Month (mm):</label>
+            <input type="number" id="endMonth" name="endMonth" min="1" max="12" required>
+            
+            <label for="endDay">End Day (dd):</label>
+            <input type="number" id="endDay" name="endDay" min="1" max="31" required>
+            
+            <label for="totalHours">Total Hours Worked:</label>
+            <input type="number" id="totalHours" name="totalHours" step="0.1" required>
+            
+            <label for="hourlyRate">Hourly Rate:</label>
+            <input type="number" id="hourlyRate" name="hourlyRate" step="0.01" required>
+            
+            <label for="bonus">Bonus (if any):</label>
+            <input type="number" id="bonus" name="bonus" step="0.01" value="0">
+            
+            <button type="button" onclick="calculatePay()">Calculate Pay</button>
+        </form>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script src="payroll.js"></script>
+    <script>
+        Module.onRuntimeInitialized = function() {
+            console.log('WebAssembly module is loaded');
+        };
+
+        function calculatePay() {
+            const startMonth = parseInt(document.getElementById('startMonth').value);
+            const startDay = parseInt(document.getElementById('startDay').value);
+            const endMonth = parseInt(document.getElementById('endMonth').value);
+            const endDay = parseInt(document.getElementById('endDay').value);
+            const totalHours = parseFloat(document.getElementById('totalHours').value);
+            const hourlyRate = parseFloat(document.getElementById('hourlyRate').value);
+            const bonus = parseFloat(document.getElementById('bonus').value);
+
+            if (typeof Module._processInput === 'function') {
+                const resultPointer = Module._processInput(startMonth, startDay, endMonth, endDay, totalHours, hourlyRate, bonus);
+                const result = Module.UTF8ToString(resultPointer);
+                document.getElementById('result').innerText = `Your earnings: ${result}`;
+            } else {
+                console.error('processInput function not found in WebAssembly module');
+            }
+        }
+    </script>
+</body>
+</html>
